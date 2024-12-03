@@ -6,23 +6,52 @@
 		
 		<style>
 		
-			#page-header {
-			
-				text-align: center;
+			body{
+				color: rgb(0,0,100); 
+				background-image: url("img/header_cropped.png"); 
+				background-repeat: no-repeat;						
+				background-position: center top;
+				background-size: 100% 600px;
+				background-color: white;
+			}
+		
+			#page_header_title {
+				
+				font-size: 1.5em;
+				float: left;
 			}
 			
-			#sub-title{
-				text-align: center;
-				font-style: italic;
-			}
 			
 			#contents {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				position: sticky;
 				font-size: 1.5em;
 			}
 			
-			.page_top {
-				background-color: rgb(0,0,125);
-				color: rgb(255,255,255)
+			#active a {
+				color: rgb(0,0,100);
+			}
+			
+			.page_header {
+				background-color: rgba(0,0,0, 0.2);					
+			}
+			
+			.content_element {
+				float: right;
+			}
+			
+			.content_element a {
+				display: block;
+				color: white;
+				text-align: center;
+				padding: 14px 16px;
+				text-decoration: none;
+			}
+			.content_element a:hover {
+				color: grey; 											
 			}
 		
 		</style>
@@ -30,25 +59,20 @@
 	
 	<body>
 	
-	<div class = "page_top">
-	<h1 id = "page-header">Shalindra Gunasekera (CSS pending)</h1>
 	
-	<p id="sub-title">
-	This is a page documenting all my failures. <br>
-	Buried amongst them are useful learnings and funny stories.
-	</p>
+	<div class = "page_header">
+	<h1 id = "page_header_title">SHALINDRA GUNASEKERA</h1>
+	
+	<ul id = "contents">												<!-- float right reverse list order -->
+	<li class = "content_element"><a href = "contact.html">Contact</a></li>
+	<li class = "content_element"><a href = "about.html">About</a></li>
+	<li class = "content_element"><a href = "rec_proj.html">Recreational Projects</a></li>
+	<li class = "content_element"><a href = "tech_proj.html">Technical Endeavours</a></li>
+	<li id = "active" class = "content_element"><a href = "index.html">Home</a></li>
+	</ul>
+
 	</div>
 	
-	
-	<h2>Menu</h2>
-	<ul id = "contents">
-	<li><a href = "about.html">About</a></li>
-	<li><a href = "tech_proj.html">Technical Endeavours</a></li>
-	<li><a href = "rec_proj.html">Recreational Projects</a></li>
-	<li>Contact</li>
-	</ul>
-	
-
 	</body>
 
 </html>
