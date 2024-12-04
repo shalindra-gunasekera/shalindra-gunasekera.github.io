@@ -7,76 +7,99 @@
 		<title>Shalindra Gunasekera - About</title>
 	
 		<style>
+			body{
+				color: rgb(0,0,100); 
+				background-image: url("img/b2m_start.jpg"); 
+				background-repeat: no-repeat;						
+				background-position: center top;
+				background-size: cover;
+				background-color: white;
+			}
+		
+			#page_header_title {
+				
+				font-size: 1.5em;
+				float: left;
+			}
+			
+			
+			#contents {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				position: sticky;
+				font-size: 1.5em;
+			}
+			
+			#active a {
+				color: rgb(0,0,100);
+			}
+			
+			#footer{
+				background-color: rgba(0,0,0, 0.6);	
+				color: white;
+			}
+			
+			.page_header {
+				background-color: rgba(0,0,0, 0.2);					
+			}
+			
+			.content_element {
+				float: right;
+			}
+			
+			.content_element a {
+				display: block;
+				color: white;
+				text-align: center;
+				padding: 14px 16px;
+				text-decoration: none;
+			}
+			.content_element a:hover {
+				color: rgb(160,160,160); 											
+			}
+			
+			.threecol_colOne{
+			background-color: rgba(255,255,255,0.6);
+			width: 33%;
+			font-size: 2em;
+			}
 		
 		</style>
 		
 	</head>
 	
 	<body>
-		<h1>About</h1>
-		<!-- general intro -->
-		<div id = "general">
-		<h2>I'm Shali</h2>
-		<p>
-			I'm currently an undergraduate student at the University of New South Wales (UNSW) Sydney, studying Electrical Engineering and Physics in a double degree program. 
-			I was born in Sri Lanka, and at the age of three moved to Perth, Western Australia. After completing my primary and secondary schooling there, I made the rather 
-			spontaneous decision to move east for university, which is where I find myself today. 
-		<p>
-		</div>
+	
+	
+		<div class = "page_header">
+		<h1 id = "page_header_title">SHALINDRA GUNASEKERA</h1>
 		
-		<!-- stupid facts -->
-		<div id = "facts">
-		<h2>Fast Facts</h2>
-		
-		<ul id = "fact-list">
-			<li>For the first 16 years of my life I hated eating eggs. Now I run through a dozen every 2-4 days.</li>
-			<li>My favourite book is an equal tie between <em>The Old Man and the Sea</em> and <em>Les Miserable</em>. I think <em> Dubliners</em> is the most 
-			confusing book ever written.</li>
-			<li>I don't understand superhero movies (except Black Panther that one was sick)</li>
+		<ul id = "contents">												<!-- float right reverse list order -->
+		<li class = "content_element"><a href = "contact.html">Contact</a></li>
+		<li id = "active" class = "content_element"><a href = "about.html">About</a></li>
+		<li class = "content_element"><a href = "rec_proj.html">Recreational Projects</a></li>
+		<li class = "content_element"><a href = "tech_proj.html">Technical Endeavours</a></li>
+		<li class = "content_element"><a href = "index.html">Home</a></li>
 		</ul>
+
 		</div>
 		
-		<!-- A more serious timeline-->
-		
-		<div id="timeline">
-		
-		<h2>A Rough Timeline</h2>
-		
-		<h4 class = "timeline-date">November 2001</h4>
-		<p clas = "timeline-entry">Born in Sri Lanka</p>
-		
-		<h4 class = "timeline-date"> *Month Unknown* 2004</h4>
-		<p clas = "timeline-entry">Family made the move to Perth with the generous help of extended family and family friends (I can't remember what month)</p>
-		
-		<h4 class = "timeline-date">November 2018</h4>
-		<p clas = "timeline-entry">Went on a school expedition to Far Northern India with a group of legends. Went hiking, exploring and did some community service for a rural village</p>
-		
-		<h4 class = "timeline-date">December 2019</h4>
-		<p clas = "timeline-entry">Graduated high school in Perth</p>
-		
-		<h4 class = "timeline-date">February 2020</h4>
-		<p clas = "timeline-entry">Moved into on-campus accomodation, ready to start a degree in Aerospace Engineering at UNSW (wait what?)</p>
-		
-		<h4 class = "timeline-date">June 2022</h4>
-		<p clas = "timeline-entry">Decided to change out of Aerospace Engineering</p>
-		
-		<h4 class = "timeline-date">February 2023</h4>
-		<p clas = "timeline-entry">Finally comitted to a double degree in Electrical Engineering and Physics</p>
-		
+		<!-- general intro -->
+		<div class = "threecol_colOne">
+		<h2>I'm Shali (on the right)</h2>
+		<p id = "about_short">
+			I'm currently an undergraduate student at the University of New South Wales Sydney, studying Electrical Engineering and Physics in a double degree program. 
+			<br>
+			<br>
+			I was born in Sri Lanka, and at the age of three moved to Perth, Western Australia. After completing my primary and secondary schooling there, I made the rather 
+			spontaneous decision to move east for university. 
+		<p>
 		</div>
-		
-		<!-- Past Roles and Responsibilities-->
-		
-		<div id="roles">
-		
-		<h2>Past Roles</h2>
-			<p>still updating...</p>
-		</div>
-		
+	
 		<!-- end of page -->
-		<p>~~~~~<br>Last updated September 2024<p>
-		
-		<p><a href = "index.html">back home...</a><p>
+		<p id = "footer">Last updated December 2024<p>
 	
 	</body>
 </html>
