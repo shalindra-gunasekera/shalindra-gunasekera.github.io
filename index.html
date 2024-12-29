@@ -8,20 +8,10 @@
 		
 			body{
 				color: rgb(0,0,100); 
-				background-image: url("img/header_cropped.png"); 
-				background-repeat: no-repeat;						
-				background-position: center top;
-				background-size: 100% 600px;
-				background-color: white;
+				background-color: rgb(159, 202, 223);
 			}
+			
 		
-			#page_header_title {
-				
-				font-size: 1.5em;
-				float: left;
-			}
-			
-			
 			#contents {
 				list-style-type: none;
 				margin: 0;
@@ -29,24 +19,24 @@
 				overflow: hidden;
 				position: sticky;
 				font-size: 1.5em;
+
 			}
 			
 			#active a {
 				color: rgb(0,0,100);
 			}
-			
-			#footer {
-				background-color: rgba(0,0,0, 0.6);	
-				color: white;
-				bottom: 0;
+		
+			.header{
+				text-align: center;
 			}
 			
-			.page_header {
-				background-color: rgba(0,0,0, 0.2);					
+			.top_nav {
+				background-color: rgba(0,0,0, 0.2);	
+				overflow: hidden;
 			}
 			
 			.content_element {
-				float: right;
+				float: left;
 			}
 			
 			.content_element a {
@@ -59,33 +49,27 @@
 			.content_element a:hover {
 				color: rgb(160,160,160); 											
 			}
-			.section {
-				height: 600px;
-			}
+			
+			
 		
 		</style>
 	</head>
 	
 	<body>
+	<div class = "header">
+	<h1>SHALINDRA GUNASEKERA</h1>
+	</div>
 	
-	
-	<div class = "page_header">
-	<h1 id = "page_header_title">SHALINDRA GUNASEKERA</h1>
-	
+	<div class = "top_nav">
 	<ul id = "contents">												<!-- float right reverse list order -->
-	<li class = "content_element"><a href = "contact.html">Contact</a></li>
-	<li class = "content_element"><a href = "about.html">About</a></li>
-	<li class = "content_element"><a href = "rec_proj.html">Recreational Projects</a></li>
-	<li class = "content_element"><a href = "tech_proj.html">Technical Endeavours</a></li>
 	<li id = "active" class = "content_element"><a href = "index.html">Home</a></li>
+	<li class = "content_element"><a href = "tech_proj.html">Technical Projects</a></li>
+	<li class = "content_element"><a href = "rec_proj.html">Recreational Projects</a></li>
+	<li class = "content_element"><a href = "about.html">About</a></li>
+	<li class = "content_element" style="float:right"><a href = "contact.html">Contact</a></li>
 	</ul>
-
 	</div>
 	
-	<div class = "sub_section">
-	
-	</div>
-	<p id = "footer">Last updated December 2024<p>
 	
 
 	</body>
