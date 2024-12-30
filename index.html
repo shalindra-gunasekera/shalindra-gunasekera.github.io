@@ -7,9 +7,13 @@
 		<style>
 		
 			body{
-				color: rgb(0,0,100); 
-				background-color: rgb(159, 202, 223);
+				color: white; 
+				background-color: rgb(0, 0, 100);
 			}
+			
+			div{
+				column-gap: 10px;
+			} 
 			
 		
 			#contents {
@@ -23,7 +27,7 @@
 			}
 			
 			#active a {
-				color: rgb(0,0,100);
+				color: rgb(255, 179, 255);
 			}
 		
 			.header{
@@ -50,8 +54,30 @@
 				color: rgb(160,160,160); 											
 			}
 			
-			
+			.column {
+				float: left;
+				padding: 10px;
+			}
 		
+			.column.side {
+				width: 20%;
+				color: white;
+			}
+			
+			.column.middle {
+				width: 60%;
+				color: rgb(0,0,100);
+				background-color: white;
+				border-radius: 10px;
+			}
+			
+			.row::after {
+				content: "";
+				display: table;
+				clear: both;
+			}
+			
+
 		</style>
 	</head>
 	
@@ -61,7 +87,7 @@
 	</div>
 	
 	<div class = "top_nav">
-	<ul id = "contents">												<!-- float right reverse list order -->
+	<ul id = "contents">												<!--	float right reverse list order -->
 	<li id = "active" class = "content_element"><a href = "index.html">Home</a></li>
 	<li class = "content_element"><a href = "tech_proj.html">Technical Projects</a></li>
 	<li class = "content_element"><a href = "rec_proj.html">Recreational Projects</a></li>
@@ -70,8 +96,29 @@
 	</ul>
 	</div>
 	
+	<div class = "row">
 	
+		<div class = "column side">
+			<h2>Featured</h2>	
+		</div>
+			
+		<div class = "column middle">
+			<h2>In the Spotlight: This site is still being built</h2>
+			<p>
+			Ain't html just the best! Well I'd disagree. This site is currently the spotlight for this sight, but keep an eye out for cool project soon to appear!
+			</p>	
+		</div>
 
+		<div class = "column side">
+			<h2>I'm Shali</h2>
+			<p>
+			Electrical Engineering Student at UNSW
+			</p>
+		</div>
+	
+	</div>
+	
+	
 	</body>
 
 </html>
