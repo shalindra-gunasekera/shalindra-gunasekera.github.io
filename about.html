@@ -17,6 +17,8 @@
 			body { height: 100%; width = 100%; }
 			
 			#map { height: 580px; width: 960px; }
+			
+			#picture { height: 580px; width: 960px; }
 		</style>
 		
 		
@@ -25,20 +27,153 @@
 	<body>
 		<h1 id = "page_header_title">Guess The Location</h1>
 
+		<div id = "picture">
+			<img id="active" src="img/1.png" alt="">
+		</div>
+		
+
 		<div id = "map"></div>
 		
+		<button id="confirm" onclick="confirm()">Confirm</button> 
+		<button id="next" onclick="next()">Next</button> 
+		<button id="rst" onclick="reset">Reset</button> 
+		
+		<p id="dist">Distance: </p>
+		<p id="score">Score: 0</p>
+		
+		
 		<script>
-
-			var map = L.map('map').setView([-34, 151.2], 9);
+			var isConfirmed = false;
+			
+			//global variables to track game status
+			var score = 0;
+			
+			//js image settings and reference
+			var img = document.getElementById('active');
+			const img_max = 5; //number of images, essentially to prevent overflow and indicate end of round
+			var img_current = 1;
+			
+			//javascript button variables
+			const conf_btn = document.getElementById('confirm');
+			const next_btn = document.getElementById('next');
+			const rst_btn = document.getElementById('rst'); //ideally reset the game state
+			//id needs to be above to work, not sure why
+			
+			//initial button state
+			next_btn.disabled = true;
+			
+		
+			//initialise map to zone in on a zoomed out version of the greater sydney area
+			pos_init = [-34, 151.2];
+			var map = L.map('map', {minZoom: 7}).setView([-34, 151.2], 9);
+			//can also set the map boundaries
 			
 			L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 				maxZoom: 19,
 				attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 				}).addTo(map);
+			
+			
+			var user_pos = L.latLng([-34, 151.2]); //so not to initialise null object
+			var user_marker = L.marker(user_pos).addTo(map);
 				
+			function onMapClick(e) {
+			
+				/* Function responsible for getting user input
+				may be easier to create a default marker and allow the user to move it rather than create a marker
+				function must:
+					+ Place a marker where the user clicks
+					+ remove any previous markers the user placed
+					- prevent movement of marker when confirmed 
+					+ activate the confirmation button, which can only be pressed when a marker is placed down
+				
+				the function may:
+					- display coordinates of the user selection, but this was more for debugging purposes
+				
+				*/
+				user_pos = e.latlng
+				
+				if (!isConfirmed){user_marker.setLatLng(user_pos);}
+				//for now just using the same color icon but will need to change it later
+				//also lets user add multiple markers
+				//document.getElementById("dist").innerHTML = user_pos; //comment out for debugging if needed
+			}
+			
+			function confirm(){
+				
+				/*
+				Function responsible for revealing round result
+				
+				function must:
+					- Reveal position of image and distance from user selection
+					- Deactivate further user selection and confirmation which will just continue adding uneccessary markers, until next round has started
+					- Update the score
+					- Activate the next round button
+				*/
+				
+				//disable repeat confirmation and enable game status boolen
+				isConfirmed = true;
+				next_btn.disabled = false;
+				conf_btn.disabled = true;
+				
+				//first reveal position
+				var seacliff_pos = [-34.255291, 150.972086]
+				seacliff_ll = L.latLng(seacliff_pos);
+				var seacliff = L.marker(seacliff_pos).addTo(map);
+				seacliff.bindPopup("Seacliff Bridge!");
+				
+				//display path from user select to true
+				var pathlatlngs = [seacliff_ll,user_pos];
+				var path = L.polyline(pathlatlngs, {color: 'red'}).addTo(map);
+
+				// zoom the map to the polyline
+				map.fitBounds(path.getBounds());
+				
+				//calculate and display distance
+				dist = Math.round(seacliff_ll.distanceTo(user_pos)) //gets distance to nearest meter;
+				score +=dist; //add to score the distance in m
+				//dist/=1000; //update distance to be in km
+				document.getElementById("dist").innerHTML = "Distance: " + dist/1000 + "km"
+				
+				//update score value and display
+				document.getElementById("score").innerHTML = "Score: " + score;
+
+			}
+			
+			function round_rst(){
+				isConfirmed = false;
+				next_btn.disabled = true;
+				conf_btn.disabled = false;
+			}
+			
+			function next(){
+				if (img_current >= img_max){
+					end_quiz();
+				}
+				else{
+					img_current +=1;
+					img.src = "img/"+img_current + ".png"
+					round_rst();
+				}
+			}
+		
+			function reset(){}
+			
+			function end_quiz(){
+				//right now just disables any further buttons and marker update
+				
+				isConfirmed = true;
+				next_btn.disabled = true;
+				conf_btn.disabled = true;
+			}
+			
+			
+			//on click events
+			map.on('click', onMapClick);	
 		</script>
 		
-	
+		
+
 	</body>
 </html>
 
