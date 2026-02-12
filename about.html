@@ -36,20 +36,46 @@
 		
 		<button id="confirm" onclick="confirm()">Confirm</button> 
 		<button id="next" onclick="next()">Next</button> 
-		<button id="rst" onclick="reset">Reset</button> 
+		<button id="rst" onclick="reset()">Reset</button> 
 		
 		<p id="dist">Distance: </p>
 		<p id="score">Score: 0</p>
 		
 		
 		<script>
+		
+			/*
+			Local Geoguesser Clone
+			
+			List of ESSENTIAL things that need to be done:
+				- introduce some STYLE
+				- Set the map boundaries to greater sydney
+
+				
+			Other things that are features
+				- Add some hints (maybe +1000 to the score per hint)
+				- Add a mark (pass/fail for a given distance threshold)
+				- move distance calculation to own function (maybe diplay update as well);
+
+			*/
+			
+			// ### A BUNCH OF INITIALISATION ###
 			var isConfirmed = false;
 			
 			//global variables to track game status
 			var score = 0;
+			var dist_disp = document.getElementById("dist");
+			var score_disp = document.getElementById("score");
+
+			//coordinates array, with indices matching images (with -1 offset of course)
+			const img_coords = [[-34.255291, 150.972086],[-33.997153, 151.244476],[-33.849063, 151.210716],[-33.757302, 150.288113],[-33.492033, 151.257069]];
+			const img_titles = ["Seacliff Bridge!","La Perouse!","Luna Park!","Castle Head Lookout!","Wondabyne Train Station!"];
+			var img_marker; //need the marker to be global
+			var img_pos = [];
+			var path;
 			
 			//js image settings and reference
-			var img = document.getElementById('active');
+			const img = document.getElementById('active');
 			const img_max = 5; //number of images, essentially to prevent overflow and indicate end of round
 			var img_current = 1;
 			
@@ -62,10 +88,11 @@
 			//initial button state
 			next_btn.disabled = true;
 			
-		
 			//initialise map to zone in on a zoomed out version of the greater sydney area
-			pos_init = [-34, 151.2];
-			var map = L.map('map', {minZoom: 7}).setView([-34, 151.2], 9);
+			var pos_init = [-34, 151.2];
+			var default_zoom = 9;
+			
+			var map = L.map('map', {minZoom: 7}).setView(pos_init, default_zoom);
 			//can also set the map boundaries
 			
 			L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -73,10 +100,13 @@
 				attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 				}).addTo(map);
 			
-			
-			var user_pos = L.latLng([-34, 151.2]); //so not to initialise null object
+			var user_pos = L.latLng(pos_init); //so not to initialise null object
 			var user_marker = L.marker(user_pos).addTo(map);
 				
+			//in case any intialisations are looked over
+			// #################################	
+
+			
 			function onMapClick(e) {
 			
 				/* Function responsible for getting user input
@@ -116,34 +146,43 @@
 				next_btn.disabled = false;
 				conf_btn.disabled = true;
 				
-				//first reveal position
-				var seacliff_pos = [-34.255291, 150.972086]
-				seacliff_ll = L.latLng(seacliff_pos);
-				var seacliff = L.marker(seacliff_pos).addTo(map);
-				seacliff.bindPopup("Seacliff Bridge!");
+				//reveal position
+				var img_idx = img_current -1;
+				img_pos = img_coords[img_idx]; //set the image position to the current image
+				var img_label = img_titles[img_idx];
+				reveal_location(img_idx, img_label);
 				
-				//display path from user select to true
-				var pathlatlngs = [seacliff_ll,user_pos];
-				var path = L.polyline(pathlatlngs, {color: 'red'}).addTo(map);
+				//calculate and display distance
+				img_ll = L.latLng(img_pos,img_label)
+				dist = Math.round(img_ll.distanceTo(user_pos)) //gets distance to nearest meter;
+				
+				score +=dist; //add to score the distance in m
+				dist_disp.innerHTML = "Distance: " + dist/1000 + "km"
+				
+				//update score value and display
+				score_disp.innerHTML = "Score: " + score;
+
+			}
+			
+			function reveal_location(img_ixd,img_label){
+				// reveal marker
+
+				img_marker = L.circle(img_pos, {
+				color: 'green',
+				fillColor: 'green',
+				fillOpacity: 0.5,
+				radius: 10
+				}).addTo(map);
+				
+				img_marker.bindPopup(img_label);
+				
+				//creat path between markers
+				var path_coords = [img_pos,user_pos];
+				path = L.polyline(path_coords, {color: 'red'}).addTo(map);
 
 				// zoom the map to the polyline
 				map.fitBounds(path.getBounds());
 				
-				//calculate and display distance
-				dist = Math.round(seacliff_ll.distanceTo(user_pos)) //gets distance to nearest meter;
-				score +=dist; //add to score the distance in m
-				//dist/=1000; //update distance to be in km
-				document.getElementById("dist").innerHTML = "Distance: " + dist/1000 + "km"
-				
-				//update score value and display
-				document.getElementById("score").innerHTML = "Score: " + score;
-
-			}
-			
-			function round_rst(){
-				isConfirmed = false;
-				next_btn.disabled = true;
-				conf_btn.disabled = false;
 			}
 			
 			function next(){
@@ -152,12 +191,36 @@
 				}
 				else{
 					img_current +=1;
-					img.src = "img/"+img_current + ".png"
+					img.src = "img/"+img_current + ".png";
 					round_rst();
 				}
 			}
-		
-			function reset(){}
+			
+			function round_rst(){
+				isConfirmed = false;
+				next_btn.disabled = true;
+				conf_btn.disabled = false;
+				
+				//remove existing markers
+				remove_round_marker();
+				
+				//reset map view
+				map.setView(pos_init, default_zoom);
+
+				//reset distance display
+				dist_disp.innerHTML = "Distance: ";
+				user_marker.setLatLng(L.latLng(pos_init)); //resets user choice to default (centre of map);
+			}
+			
+			function remove_round_marker(){
+				map.removeLayer(img_marker);
+				map.removeLayer(path);
+	
+			}
+				
+			function reset(){
+				window.location.reload();
+			}
 			
 			function end_quiz(){
 				//right now just disables any further buttons and marker update
