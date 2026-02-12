@@ -1,32 +1,273 @@
 <!DOCTYPE html>
+
 <html>
 	<head>
 		<meta charset = "utf-8">
-		<title>Shalindra Gunasekera - Home</title>
+		<title>Runsoc Geoguesser</title>
+
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+		integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+		crossorigin=""/>
+		
+		 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+		crossorigin=""></script>
+		
+		<meta name= "viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		
+		<style>
+			body { height: 100%; width = 100%; }
+			
+			#map { max-width: 100%; height: auto; 
+					padding: 50px;
+			
+			}
+			
+			#active { max-width: 100%; height: auto;
+						padding: 50px;
+			}
+			
+			.container {
+				display: grid;
+				grid-template-columns: 4fr 1fr 4fr;
+			
+			}
+		</style>
+		
 		
 	</head>
 	
 	<body>
-	<div class = "header">
-	<h1>SHALINDRA GUNASEKERA</h1>
-	</div>
-	
-	<div class = "top_nav">
-	<ul id = "contents">												<!--	float right reverse list order -->
-	<li id = "active" class = "content_element"><a href = "index.html">Home</a></li>
-	<li class = "content_element"><a href = "tech_proj.html">Technical Projects</a></li>
-	<li class = "content_element"><a href = "rec_proj.html">Recreational Projects</a></li>
-	<li class = "content_element"><a href = "about.html">About</a></li>
-	<li class = "content_element"><a href = "contact.html">Contact</a></li>
-	</ul>
-	</div>
-	
+		<h1 id = "page_header_title">Guess The Location</h1>
 
-	<h2>In the Spotlight: This site is still being built</h2>
-	<p>
-	Ain't html just the best! Well I'd disagree. This site is currently the spotlight for this sight, but keep an eye out for cool project soon to appear!
-	</p>	
+		<div class="container">
+			<div id = "picture">
+				<img id="active" src="img/1.png" alt="">
+			</div>
+			
+			<div></div>
+			
+			<div id = "map"></div>
+		</div>
+				
+		<div id = "ui">
+			<button id="confirm" onclick="confirm()">Confirm</button> 
+			<button id="next" onclick="next()">Next</button> 
+			<button id="rst" onclick="reset()">Reset</button> 
+		</div>
+			
+		<div id = "data">
+			<p id="dist">Distance: </p>
+			<p id="score">Score: 0</p>
+		</div>
+			
+
+		
+		<script>
+		
+			/*
+			Local Geoguesser Clone
+			
+			List of ESSENTIAL things that need to be done:
+				- introduce some STYLE
+				- Set the map boundaries to greater sydney
+
+				
+			Other things that are features
+				- Add some hints (maybe +1000 to the score per hint)
+				- Add a mark (pass/fail for a given distance threshold)
+				- move distance calculation to own function (maybe diplay update as well);
+
+			*/
+			
+			// ### A BUNCH OF INITIALISATION ###
+			var isConfirmed = false;
+			
+			//global variables to track game status
+			var score = 0;
+			var dist_disp = document.getElementById("dist");
+			var score_disp = document.getElementById("score");
+
+			//coordinates array, with indices matching images (with -1 offset of course)
+			const img_coords = [[-34.255291, 150.972086],[-33.997153, 151.244476],[-33.849063, 151.210716],[-33.757302, 150.288113],[-33.492033, 151.257069]];
+			const img_titles = ["Seacliff Bridge!","La Perouse!","Luna Park!","Castle Head Lookout!","Wondabyne Train Station!"];
+			var img_marker; //need the marker to be global
+			var img_pos = [];
+			var path;
+			
+			//js image settings and reference
+			const img = document.getElementById('active');
+			const img_max = 5; //number of images, essentially to prevent overflow and indicate end of round
+			var img_current = 1;
+			
+			//javascript button variables
+			const conf_btn = document.getElementById('confirm');
+			const next_btn = document.getElementById('next');
+			const rst_btn = document.getElementById('rst'); //ideally reset the game state
+			//id needs to be above to work, not sure why
+			
+			//initial button state
+			next_btn.disabled = true;
+			
+			//initialise map to zone in on a zoomed out version of the greater sydney area
+			var pos_init = [-34, 151.2];
+			var default_zoom = 9
+			var left_cnr = L.latLng([-32.812948, 149.621961])
+			var right_cnr = L.latLng([-35.133560, 151.948838])
+
+
+			map_bounds = L.latLngBounds(left_cnr, right_cnr)
+			
+			var map = L.map('map', {minZoom: 8}).setView(pos_init, default_zoom);
+			map.setMaxBounds(map_bounds)
+			// also set the map boundaries
+			
+			
+			L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				maxZoom: 19,
+				attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+				}).addTo(map);
+			
+			var user_pos = L.latLng(pos_init); //so not to initialise null object
+			var user_marker = L.marker(user_pos).addTo(map);
+				
+			//in case any intialisations are looked over
+			// #################################	
+
+			
+			function onMapClick(e) {
+			
+				/* Function responsible for getting user input
+				may be easier to create a default marker and allow the user to move it rather than create a marker
+				function must:
+					+ Place a marker where the user clicks
+					+ remove any previous markers the user placed
+					- prevent movement of marker when confirmed 
+					+ activate the confirmation button, which can only be pressed when a marker is placed down
+				
+				the function may:
+					- display coordinates of the user selection, but this was more for debugging purposes
+				
+				*/
+				user_pos = e.latlng
+				
+				if (!isConfirmed){user_marker.setLatLng(user_pos);}
+				//for now just using the same color icon but will need to change it later
+				//also lets user add multiple markers
+				//document.getElementById("dist").innerHTML = user_pos; //comment out for debugging if needed
+			}
+			
+			function confirm(){
+				
+				/*
+				Function responsible for revealing round result
+				
+				function must:
+					- Reveal position of image and distance from user selection
+					- Deactivate further user selection and confirmation which will just continue adding uneccessary markers, until next round has started
+					- Update the score
+					- Activate the next round button
+				*/
+				
+				//disable repeat confirmation and enable game status boolen
+				isConfirmed = true;
+				next_btn.disabled = false;
+				conf_btn.disabled = true;
+				
+				//reveal position
+				var img_idx = img_current -1;
+				img_pos = img_coords[img_idx]; //set the image position to the current image
+				var img_label = img_titles[img_idx];
+				reveal_location(img_idx, img_label);
+				
+				//calculate and display distance
+				img_ll = L.latLng(img_pos,img_label)
+				dist = Math.round(img_ll.distanceTo(user_pos)) //gets distance to nearest meter;
+				
+				score +=dist; //add to score the distance in m
+				dist_disp.innerHTML = "Distance: " + dist/1000 + "km"
+				
+				//update score value and display
+				score_disp.innerHTML = "Score: " + score;
+
+			}
+			
+			function reveal_location(img_ixd,img_label){
+				// reveal marker
+
+				img_marker = L.circle(img_pos, {
+				color: 'green',
+				fillColor: 'green',
+				fillOpacity: 0.5,
+				radius: 10
+				}).addTo(map);
+				
+				img_marker.bindPopup(img_label);
+				
+				//creat path between markers
+				var path_coords = [img_pos,user_pos];
+				path = L.polyline(path_coords, {color: 'red'}).addTo(map);
+
+				// zoom the map to the polyline
+				map.fitBounds(path.getBounds());
+				
+			}
+			
+			function next(){
+				if (img_current >= img_max){
+					end_quiz();
+				}
+				else{
+					img_current +=1;
+					img.src = "img/"+img_current + ".png";
+					round_rst();
+				}
+			}
+			
+			function round_rst(){
+				isConfirmed = false;
+				next_btn.disabled = true;
+				conf_btn.disabled = false;
+				
+				//remove existing markers
+				remove_round_marker();
+				
+				//reset map view
+				map.setView(pos_init, default_zoom);
+
+				//reset distance display
+				dist_disp.innerHTML = "Distance: ";
+				user_marker.setLatLng(L.latLng(pos_init)); //resets user choice to default (centre of map);
+			}
+			
+			function remove_round_marker(){
+				map.removeLayer(img_marker);
+				map.removeLayer(path);
+	
+			}
+				
+			function reset(){
+				window.location.reload();
+			}
+			
+			function end_quiz(){
+				//right now just disables any further buttons and marker update
+				
+				isConfirmed = true;
+				next_btn.disabled = true;
+				conf_btn.disabled = true;
+			}
+			
+			
+			//on click events
+			map.on('click', onMapClick);	
+		</script>
+		
+		
 
 	</body>
 </html>
+
+
+
 
