@@ -16,30 +16,91 @@
 		<meta name= "viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 		
 		<style>
+		
+			html {
+				background-color: #3d3737;
+			}
+			
 			body { height: 100%; width = 100%; }
+			
+			p {
+				color: #54a0ff;
+			}
+			
+			button {
+				background-color: #54a0ff;
+				color: #002754;
+				border-radius: 5px;
+				border: none;
+				cursor: pointer;
+				padding: 15px 32px;
+				transition-duration: 0.4s;
+
+			}
+			
+			button:hover {
+				background-color: #002754;
+				color: #54a0ff;
+			}
 			
 			#map { max-width: 100%; height: auto; 
 					padding: 50px;
-			
+					border-radius: 10px;
 			}
 			
 			#active { max-width: 100%; height: auto;
 						padding: 50px;
 			}
 			
+			#title {
+				text-align: center;
+				float: center;
+				color: #54a0ff;
+			}
+			
+			#logo {
+				max-width: 5%;
+				width: auto;
+				float: left;
+			}
+			
+			#ui {
+				padding:10px;
+			}
+			
 			.container {
 				display: grid;
 				grid-template-columns: 4fr 1fr 4fr;
-			
+				
+				border: 2px solid #54a0ff;
+				border-radius: 5px;
 			}
+			
+			.ui_container {
+				display: grid;
+				grid-template-columns: 4fr 2fr 2fr;
+				
+				border: 2px solid #54a0ff;
+				border-radius: 5px;
+			}
+			
+			.header{
+				display: inline-block;
+				width: 100%;
+			}
+
 		</style>
 		
 		
 	</head>
 	
 	<body>
-		<h1 id = "page_header_title">Guess The Location</h1>
+		<div class="header">
+			<img id="logo" src="img/logo.png" alt="runsoc logo">
+			<h1 id="title">RunSoc Guess The Location!</h1>
 
+		</div>
+		
 		<div class="container">
 			<div id = "picture">
 				<img id="active" src="img/1.png" alt="">
@@ -49,19 +110,27 @@
 			
 			<div id = "map"></div>
 		</div>
+		
+		<br></br>
+		
+		<div class="ui_container">
+			<div id = "ui">
+				<button id="confirm" onclick="confirm()">Confirm</button> 
+				<button id="next" onclick="next()">Next</button> 
+				<button id="rst" onclick="reset()">Reset</button> 
+			</div>
 				
-		<div id = "ui">
-			<button id="confirm" onclick="confirm()">Confirm</button> 
-			<button id="next" onclick="next()">Next</button> 
-			<button id="rst" onclick="reset()">Reset</button> 
-		</div>
-			
-		<div id = "data">
-			<p id="dist">Distance: </p>
-			<p id="score">Score: 0</p>
-		</div>
-			
+			<div></div>
 
+			<div id = "data">
+				<p id="dist">Distance: </p>
+				<p id="score">Score: 0</p>
+			</div>
+		</div>
+			
+		<div id="footer">
+		<p><i>Made by Shalindra Gunasekera - not a compsci major</i></p>
+		</div>
 		
 		<script>
 		
@@ -172,6 +241,7 @@
 				//disable repeat confirmation and enable game status boolen
 				isConfirmed = true;
 				next_btn.disabled = false;
+
 				conf_btn.disabled = true;
 				
 				//reveal position
@@ -227,6 +297,7 @@
 			function round_rst(){
 				isConfirmed = false;
 				next_btn.disabled = true;
+				
 				conf_btn.disabled = false;
 				
 				//remove existing markers
@@ -255,7 +326,11 @@
 				
 				isConfirmed = true;
 				next_btn.disabled = true;
+
 				conf_btn.disabled = true;
+				
+				dist_disp.innerHTML = "";
+				score_disp.innerHTML = "<strong>Congrats! Your final score is " + score + "</strong>";
 			}
 			
 			
