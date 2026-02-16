@@ -33,14 +33,20 @@
 				border-radius: 5px;
 				border: none;
 				cursor: pointer;
-				padding: 15px 32px;
+				padding: 7% 5%;
 				transition-duration: 0.4s;
-
 			}
 			
 			button:hover {
 				background-color: #002754;
 				color: #54a0ff;
+			}
+			
+			button:disabled{
+				background-color: #54a0ff;
+				color: #002754;
+				opacity: 0.6;
+				cursor: not-allowed;
 			}
 			
 			#map { max-width: 100%; height: auto; 
@@ -125,21 +131,18 @@
 			<div id = "data">
 				<p id="dist">Distance: </p>
 				<p id="score">Score: 0</p>
+				<p id="mark">Mark: 0/5</p>
 			</div>
 		</div>
 			
 		<div id="footer">
-		<p><i>Made by Shalindra Gunasekera - not a compsci major</i></p>
+			<p><i>Made by Shalindra Gunasekera - not a Comp Sci major</i></p>
 		</div>
 		
 		<script>
 		
 			/*
 			Local Geoguesser Clone
-			
-			List of ESSENTIAL things that need to be done:
-				- introduce some STYLE
-				- Set the map boundaries to greater sydney
 
 				
 			Other things that are features
@@ -154,8 +157,12 @@
 			
 			//global variables to track game status
 			var score = 0;
+			var dist = 0;
+			var mark = 0;
 			var dist_disp = document.getElementById("dist");
 			var score_disp = document.getElementById("score");
+			var mark_disp = document.getElementById("mark");
+
 
 			//coordinates array, with indices matching images (with -1 offset of course)
 			const img_coords = [[-34.255291, 150.972086],[-33.997153, 151.244476],[-33.849063, 151.210716],[-33.757302, 150.288113],[-33.492033, 151.257069]];
@@ -169,6 +176,9 @@
 			const img_max = 5; //number of images, essentially to prevent overflow and indicate end of round
 			var img_current = 1;
 			
+			//initialise mark display
+			mark_disp.innerHTML = "Mark: " + mark + "/" + img_current;
+			
 			//javascript button variables
 			const conf_btn = document.getElementById('confirm');
 			const next_btn = document.getElementById('next');
@@ -180,12 +190,12 @@
 			
 			//initialise map to zone in on a zoomed out version of the greater sydney area
 			var pos_init = [-34, 151.2];
-			var default_zoom = 9
-			var left_cnr = L.latLng([-32.812948, 149.621961])
-			var right_cnr = L.latLng([-35.133560, 151.948838])
+			var default_zoom = 9;
+			var left_cnr = L.latLng([-32.812948, 149.621961]);
+			var right_cnr = L.latLng([-35.133560, 151.948838]);
 
 
-			map_bounds = L.latLngBounds(left_cnr, right_cnr)
+			map_bounds = L.latLngBounds(left_cnr, right_cnr);
 			
 			var map = L.map('map', {minZoom: 8}).setView(pos_init, default_zoom);
 			map.setMaxBounds(map_bounds)
@@ -259,6 +269,12 @@
 				
 				//update score value and display
 				score_disp.innerHTML = "Score: " + score;
+				
+				//update mark
+				if (dist <3000){
+					mark+=1;
+					mark_disp.innerHTML ="Mark: " + mark + "/" + img_current;
+				}
 
 			}
 			
@@ -272,7 +288,7 @@
 				radius: 10
 				}).addTo(map);
 				
-				img_marker.bindPopup(img_label);
+				img_marker.bindPopup(img_label).openPopup();
 				
 				//creat path between markers
 				var path_coords = [img_pos,user_pos];
@@ -290,6 +306,7 @@
 				else{
 					img_current +=1;
 					img.src = "img/"+img_current + ".png";
+					mark_disp.innerHTML = "Mark: " + mark + "/" + img_current;
 					round_rst();
 				}
 			}
@@ -331,6 +348,8 @@
 				
 				dist_disp.innerHTML = "";
 				score_disp.innerHTML = "<strong>Congrats! Your final score is " + score + "</strong>";
+				mark_disp.innerHTML = "<strong>Final Mark: " + mark + "/" + img_max + "</strong>";
+
 			}
 			
 			
