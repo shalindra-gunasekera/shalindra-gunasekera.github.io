@@ -13,4 +13,9 @@ which documents all his publications, teaching material, and wholesome news. See
 
 The second of which was a portfolio website created by the incredible Joe Li. Check that one out here: https://joe-li.com/
 
+
+Some things I want to implement soon:
+- Separate page for Runsoc Geoguesser with development docs
+- BEANS (guide to beans and legumes)
+  
 Last updated 20/02/26
